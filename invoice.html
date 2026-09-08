@@ -43,6 +43,39 @@
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 20px 20px;
         }
+
+        /* Mobile-specific overrides to make the live preview and invoice readable on small screens */
+        @media (max-width: 640px) {
+            .a4-page {
+                width: 100% !important;
+                min-height: auto !important;
+                aspect-ratio: auto !important;
+                padding: 16px !important;
+                box-shadow: none !important;
+                border-radius: 8px !important;
+            }
+
+            .preview-container {
+                padding: 0.75rem !important;
+            }
+
+            /* Reduce large typographic scales inside the preview */
+            .a4-page .text-4xl { font-size: 1.25rem !important; }
+            .a4-page .text-2xl { font-size: 1.125rem !important; }
+
+            /* Make grid columns inside the invoice stack vertically for narrow screens */
+            .a4-page .grid-cols-2 { grid-template-columns: 1fr !important; }
+            .a4-page .grid-cols-3 { grid-template-columns: 1fr !important; }
+            .a4-page .grid-cols-4 { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+
+            /* Tighter table spacing */
+            .a4-page table { font-size: 0.95rem !important; }
+            .a4-page th, .a4-page td { padding: 0.35rem 0.5rem !important; }
+
+            /* Ensure totals and action buttons flow naturally */
+            .a4-page .flex.justify-end { justify-content: flex-start !important; }
+            .mt-6.flex.flex-col.sm\:flex-row { position: static !important; }
+        }
     </style>
     
     <script>
@@ -390,7 +423,7 @@
                             </div>
 
                             <!-- Items Table -->
-                            <table class="w-full mb-8">
+                            <table class="hidden sm:table w-full mb-8">
                                 <thead>
                                     <tr class="border-b-2" :class="settings.template === 'bold' ? 'border-brand bg-brand text-white' : 'border-slate-200 bg-slate-50 text-slate-600'">
                                         <th class="text-left py-3 px-2 text-xs font-bold uppercase tracking-wider w-1/2">Description</th>
@@ -415,6 +448,24 @@
                                     </template>
                                 </tbody>
                             </table>
+
+                            <!-- Stacked items for very small screens -->
+                            <div class="sm:hidden space-y-3 mb-8">
+                                <template x-for="item in currentInvoice.items" :key="item.id">
+                                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div class="font-medium text-slate-800 truncate" x-text="item.description || 'Item description'"></div>
+                                            <div class="text-sm font-semibold text-slate-900" x-text="formatCurrencyStatic(item.lineTotal, currentInvoice.currency)"></div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-2 text-sm text-slate-600">
+                                            <div class="flex justify-between"><span class="font-medium text-slate-500">Qty</span><span x-text="item.quantity"></span></div>
+                                            <div class="flex justify-between"><span class="font-medium text-slate-500">Price</span><span x-text="formatCurrencyStatic(item.unitPrice, currentInvoice.currency)"></span></div>
+                                            <div class="flex justify-between"><span class="font-medium text-slate-500">Discount</span><span x-text="item.discount > 0 ? ('-' + formatCurrencyStatic(item.discount, currentInvoice.currency)) : '-' "></span></div>
+                                            <div class="flex justify-between"><span class="font-medium text-slate-500">Tax</span><span x-text="item.taxRate + '%' "></span></div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
 
                             <!-- Totals -->
                             <div class="flex justify-end mb-12">
