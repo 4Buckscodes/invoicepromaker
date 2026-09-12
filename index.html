@@ -423,7 +423,7 @@
                             </div>
 
                             <!-- Items Table -->
-                            <table class="hidden sm:table w-full mb-8">
+                            <table class="table w-full mb-8">
                                 <thead>
                                     <tr class="border-b-2" :class="settings.template === 'bold' ? 'border-brand bg-brand text-white' : 'border-slate-200 bg-slate-50 text-slate-600'">
                                         <th class="text-left py-3 px-2 text-xs font-bold uppercase tracking-wider w-1/2">Description</th>
@@ -448,24 +448,6 @@
                                     </template>
                                 </tbody>
                             </table>
-
-                            <!-- Stacked items for very small screens -->
-                            <div class="sm:hidden space-y-3 mb-8">
-                                <template x-for="item in currentInvoice.items" :key="item.id">
-                                    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                                        <div class="flex justify-between items-start mb-2">
-                                            <div class="font-medium text-slate-800 truncate" x-text="item.description || 'Item description'"></div>
-                                            <div class="text-sm font-semibold text-slate-900" x-text="formatCurrencyStatic(item.lineTotal, currentInvoice.currency)"></div>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-2 text-sm text-slate-600">
-                                            <div class="flex justify-between"><span class="font-medium text-slate-500">Qty</span><span x-text="item.quantity"></span></div>
-                                            <div class="flex justify-between"><span class="font-medium text-slate-500">Price</span><span x-text="formatCurrencyStatic(item.unitPrice, currentInvoice.currency)"></span></div>
-                                            <div class="flex justify-between"><span class="font-medium text-slate-500">Discount</span><span x-text="item.discount > 0 ? ('-' + formatCurrencyStatic(item.discount, currentInvoice.currency)) : '-' "></span></div>
-                                            <div class="flex justify-between"><span class="font-medium text-slate-500">Tax</span><span x-text="item.taxRate + '%' "></span></div>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
 
                             <!-- Totals -->
                             <div class="flex justify-end mb-12">
@@ -924,6 +906,7 @@
                     try {
                         const previewEl = document.getElementById('invoice-preview');
                         const clone = previewEl.cloneNode(true);
+                        clone.setAttribute('x-ignore', '');
                         
                         clone.style.width = '794px';
                         clone.style.minHeight = '1123px';
